@@ -36,8 +36,8 @@ class DatabaseConnector(object):
         result = sorted(result, key=lambda x: x[2]) if result else []
 
         result_dict = {"currency_name": cur_name,
-                       "currency_date": [ele[1] for ele in result],
-                       "currency_quotes": [ele[2].strftime("%Y-%m-%d %H:%M:%S") for ele in result]}
+                       "currency_quotes": [ele[1] for ele in result],
+                       "currency_date": [ele[2].strftime("%Y-%m-%d %H:%M:%S") for ele in result]}
         return result_dict
 
     def calculate_outlier(self, early_date, late_date):
