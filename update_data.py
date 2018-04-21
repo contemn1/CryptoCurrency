@@ -44,7 +44,7 @@ class DatabaseConnector(object):
         result_dict = {"result": cur_res}
         return result_dict
 
-    def calculate_outliner(self, early_date, late_date):
+    def calculate_outlier(self, early_date, late_date):
         cur_map = {}
         for ele in self.get_all_currency(early_date, late_date):
             cur_name, quote, date = ele
