@@ -30,5 +30,8 @@ async def main(loop):
     return await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
+    start = timeit.default_timer()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main(loop))
+    stop = timeit.default_timer()
+    print(stop - start)

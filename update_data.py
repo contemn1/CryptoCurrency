@@ -1,8 +1,10 @@
 import logging
 import MySQLdb
+import sys
 from currency import Currency
+import json
 from contextlib import closing
-
+from datetime import datetime
 
 class DatabaseConnector(object):
     def __init__(self, host, port, user, password, db_name):
@@ -34,13 +36,15 @@ class DatabaseConnector(object):
          WHERE currency_name = '{cur_name}' and  time >= '{early_date}' and time <= '{late_date}'"""
         result = self.execute_command(sql_command)
         result = sorted(result, key=lambda x: x[2]) if result else []
+        cur_quotes = [ele[1] for ele in result]
+        cur_date = [ele[2].strftime("%Y-%m-%d %H:%M:%S") for ele in result]
+        cur_res = zip(cur_date, cur_quotes)
+        cur_res = [{"date": date, "quote": quote} for date, quote in cur_res]
 
-        result_dict = {"currency_name": cur_name,
-                       "currency_quotes": [ele[1] for ele in result],
-                       "currency_date": [ele[2].strftime("%Y-%m-%d %H:%M:%S") for ele in result]}
+        result_dict = {"result": cur_res}
         return result_dict
 
-    def calculate_outlier(self, early_date, late_date):
+    def calculate_outliner(self, early_date, late_date):
         cur_map = {}
         for ele in self.get_all_currency(early_date, late_date):
             cur_name, quote, date = ele
@@ -70,9 +74,9 @@ if __name__ == '__main__':
                                   password="cs336student",
                                   db_name="CryptoNews")
     print(connector.get_certain_currency(early_date="2018-04-08",
-                                         cur_name="Bitcoin",
-                                         late_date="2018-04-09"))
+                                   cur_name="Bitcoin",
+                                   late_date="2018-04-09"))
 
     print(connector.get_certain_currency(early_date="2018-04-09",
-                                         cur_name="Bitcoin",
-                                         late_date="2018-04-10"))
+                                   cur_name="Bitcoin",
+                                   late_date="2018-04-10"))
