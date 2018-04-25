@@ -108,7 +108,8 @@ class Predictor(object):
 
             train_cost.append(current_train_cost)
             dev_cost.append(current_valid_cost)
-
+        print(train_cost)
+        print(dev_cost)
         self.model = best_model
 
 

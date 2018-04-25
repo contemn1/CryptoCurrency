@@ -30,7 +30,7 @@ def create_data_dict(dataset, look_back=1):
 
 
 if __name__ == '__main__':
-    a = read_file("/Users/zxj/Downloads/bitcoin-price-prediction/bitcoin_price_Training - bitcoin_price.2013Apr-2017Aug.csv.csv")
+    a = read_file("/home/zxj/Downloads/bitcoin_price_Training - bitcoin_price.2013Apr-2017Aug.csv.csv")
     a = a[::-1]
     a['Close'].replace(0, np.nan, inplace=True)
     a['Close'].fillna(method='ffill', inplace=True)
@@ -44,15 +44,17 @@ if __name__ == '__main__':
     train_dict = create_data_dict(train, 5)
     test_dict = create_data_dict(test, 5)
     model = LSTMRegressor(input_size=1,
-                          hidden_size=128,
-                          dropout_rate=0.5)
+                          hidden_size=32,
+                          dropout_rate=0.5
+                          )
 
     predictor = Predictor(model=model,
                           train_data=train_dict,
                           test_data=test_dict,
-                          batch_size=128)
+                          batch_size=64,
+                          use_cuda=True)
 
-    predictor.fit(150, 15)
+    predictor.fit(300, 30)
     results = predictor.predict(predictor.test_loader).reshape(1, -1)[0]
     test_y = test_dict["y"].numpy().reshape(1, -1)[0]
     pyplot.plot(results, label='predict')
