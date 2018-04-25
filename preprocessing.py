@@ -39,10 +39,12 @@ if __name__ == '__main__':
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaled = scaler.fit_transform(values)
     train_size = int(len(scaled) * 0.8)
+    valid_size = int(len(scaled) * 0.9)
     test_size = len(scaled) - train_size
-    train, test = scaled[0:train_size, :], scaled[train_size:len(scaled), :]
-    train_dict = create_data_dict(train, 5)
-    test_dict = create_data_dict(test, 5)
+    train, valid = scaled[0:train_size, :], scaled[train_size:valid_size, :]
+    test = scaled[valid_size:, :]
+    train_dict = create_data_dict(train, 4)
+    test_dict = create_data_dict(valid, 4)
     model = LSTMRegressor(input_size=1,
                           hidden_size=32,
                           dropout_rate=0.5
