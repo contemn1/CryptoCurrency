@@ -27,13 +27,13 @@ class DatabaseConnector(object):
                 return []
 
     def get_all_currency(self, early_date, late_date):
-        sql_command = f"""SELECT currency_name, quote, time FROM Value
-         WHERE time >= '{early_date}' and time <= '{late_date}'"""
+        sql_command = """SELECT currency_name, quote, time FROM Value
+         WHERE time >= '{0}' and time <= '{1}'""".format(early_date, late_date)
         return self.execute_command(sql_command)
 
     def get_certain_currency(self, early_date, late_date, cur_name):
-        sql_command = f"""SELECT currency_name, quote, time FROM Value
-         WHERE currency_name = '{cur_name}' and  time >= '{early_date}' and time <= '{late_date}'"""
+        sql_command = """SELECT currency_name, quote, time FROM Value
+         WHERE currency_name = '{0}' and  time >= '{1}' and time <= '{2}'""".format(cur_name, early_date, late_date)
         result = self.execute_command(sql_command)
         result = sorted(result, key=lambda x: x[2]) if result else []
         cur_quotes = [ele[1] for ele in result]
@@ -59,6 +59,14 @@ class DatabaseConnector(object):
             latest_price, price_diff = calculate_diff_percentage(value)
             if price_diff * standard_diff < 0 or key == "Bitcoin":
                 yield Currency(key, latest_price, round(price_diff * 100, 2))
+
+    def get_top_currency(self, curreny_names):
+        early_date = datetime.today().strftime("%Y-%m-%d")
+        late_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        for name in curreny_names:
+            sql_command = """SELECT currency_name, quote, time FROM Value WHERE time >= '{0}' and time <= '{1}'""".format(early_date, late_date)
+
+
 
 
 def calculate_diff_percentage(value_array):
