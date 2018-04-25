@@ -1,8 +1,10 @@
 import json
+import os
 
 
 if __name__ == '__main__':
-    file_name = "bitcoin.json"
-    with open(file_name, mode="r") as file:
-        res = json.load(file)
-        print(res)
+    currency_name = "bitcoin"
+    cwd = os.getcwd()
+    file_name = "{0}.json".format(currency_name.lower())
+    data_path = os.path.join(cwd, "data", file_name)
+    print(data_path)

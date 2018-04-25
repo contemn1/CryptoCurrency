@@ -31,7 +31,7 @@ def create_data_dict(dataset, look_back=1):
 
 
 if __name__ == '__main__':
-    path = "/home/zxj/Downloads/crypto_data/Bitcoin_year.csv"
+    path = "/home/zxj/Downloads/crypto_data/BitcoinCash_year.csv"
     columns = [1, 3, 4, 5]
     df1 = read_data(path, columns=columns)
     scaler = MinMaxScaler(feature_range=(0, 1))
@@ -39,8 +39,8 @@ if __name__ == '__main__':
     scaled_features = scaler.fit_transform(df1.values)
     data_min = scaler.data_min_[0]
     data_range = scaler.data_range_[0]
-    train_size = 350
     valid_size = 10
+    train_size = scaled_features.shape[0] - valid_size - 5
     train, valid = scaled_features[0:train_size, :], scaled_features[train_size: train_size + valid_size, :]
     test = scaled_features[train_size + valid_size:, :]
     train_dict = create_data_dict(train, 4)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     test_dict = create_data_dict(test, 2)
     model = LSTMRegressor(input_size=len(columns),
                           hidden_size=32,
-                          dropout_rate=0.3
+                          dropout_rate=0.5
                           )
 
     predictor = Predictor(model=model,
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     res_dict = {"result": final_result}
 
-    file = open("bitcoin.json", mode="w+")
+    file = open("bitcoincash.json", mode="w+")
     json.dump(res_dict, file)
     file.close()
     pyplot.plot(new_results, label='predict')

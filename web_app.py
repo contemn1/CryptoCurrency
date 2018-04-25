@@ -3,6 +3,7 @@ from update_data import DatabaseConnector
 from datetime import datetime, timedelta
 import json
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -34,7 +35,7 @@ def show_user_profile(new_date):
     return json.dumps(res_dict, default=lambda obj: obj.__dict__)
 
 
-@app.route('/<date>/<currency_name>')
+@app.route('/<currency_name>/<date>')
 def show_information_of_certain_currency(date, currency_name):
     time = datetime.strptime(date, "%Y-%m-%d")
     pre_date = time - timedelta(days=1)
@@ -52,7 +53,15 @@ def show_top_currencies():
 
 @app.route('/predict/<currency_name>/<time>')
 def predict_price_of_certain_currency(currency_name, time):
-    return json.dumps(connector.predict_currency_price(currency_name, time))
+    cwd = os.getcwd()
+    file_name = "{0}.json".format(currency_name.lower())
+    data_path = os.path.join(cwd, "data", file_name)
+    if not os.path.exists(data_path):
+        data_path = os.path.join(cwd, "data", "bitcoin.json")
+
+    with open(data_path, mode="r") as file:
+        res = json.load(file)
+        return json.dumps(res)
 
 
 
