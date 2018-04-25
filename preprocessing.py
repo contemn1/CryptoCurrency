@@ -1,12 +1,11 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from torch.utils.data import TensorDataset
 import torch
 from model import LSTMRegressor
 from model import Predictor
-import copy
 from matplotlib import pyplot
+
 
 def read_file(data_path):
     data = pd.read_csv(filepath_or_buffer=data_path, index_col="Date")
@@ -24,10 +23,10 @@ def create_dataset(dataset, look_back=1):
 
 
 def create_data_dict(dataset, look_back=1):
-    trainX, trainY = create_dataset(dataset, look_back)
+    train_x, train_y = create_dataset(dataset, look_back)
 
-    return {"x": torch.from_numpy(trainX).view(trainX.shape[0], trainX.shape[1], 1),
-            "y": torch.from_numpy(trainY).view(trainY.shape[0], 1)}
+    return {"x": torch.from_numpy(train_x).view(train_x.shape[0], train_x.shape[1], 1),
+            "y": torch.from_numpy(train_y).view(train_y.shape[0], 1)}
 
 
 if __name__ == '__main__':
@@ -47,9 +46,11 @@ if __name__ == '__main__':
     model = LSTMRegressor(input_size=1,
                           hidden_size=128,
                           dropout_rate=0.5)
+
     predictor = Predictor(model=model,
                           train_data=train_dict,
-                          test_data=test_dict)
+                          test_data=test_dict,
+                          batch_size=128)
 
     predictor.fit(150, 15)
     results = predictor.predict(predictor.test_loader).reshape(1, -1)[0]
