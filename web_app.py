@@ -13,6 +13,10 @@ connector = DatabaseConnector(host="cs336.ckksjtjg2jto.us-east-2.rds.amazonaws.c
                               password="cs336student",
                               db_name="CryptoNews")
 
+curreny_names = {"Bitcoin", "Ethereum", "Ripple",
+                 "Bitcoincash", "Eos", "Litecoin", "Cardano",
+                 "Iota", "Neo", "Tron"}
+
 
 @app.route('/outlier/<new_date>')
 def show_user_profile(new_date):
@@ -39,3 +43,8 @@ def show_information_of_certain_currency(currency_name, date):
                                                      cur_name=currency_name,
                                                      late_date=date))
 
+
+@app.route('/top_currencies')
+def show_top_currencies():
+    result = {"result": connector.get_top_currency(curreny_names)}
+    return json.dumps(result)

@@ -63,11 +63,17 @@ class DatabaseConnector(object):
     def get_top_currency(self, curreny_names):
         early_date = datetime.today().strftime("%Y-%m-%d")
         late_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        for name in curreny_names:
-            sql_command = """SELECT currency_name, quote, time FROM Value WHERE time >= '{0}' and time <= '{1}'""".format(early_date, late_date)
+        sql_command = """SELECT currency_name, quote, time FROM Value WHERE time >= '{0}' and time <= '{1}'""".format(early_date, late_date)
+        result = self.execute_command(sql_command)
+        result = [ele for ele in result if ele[0] in curreny_names]
+        result = sorted(result, key=lambda x: x[2]) if result else []
+        new_result = [{"currency": ele[0], "open":float(ele[1]), "latest": "", "rate": ""} for ele in result[:10]]
+        latest_prices = [float(ele[1]) for ele in result[-10:]]
+        for index, item in enumerate(new_result):
+            item["latest"] = latest_prices[index]
+            item["rate"] = ((latest_prices[index] - item["open"]) / item["open"])*100
 
-
-
+        return new_result
 
 def calculate_diff_percentage(value_array):
     price = [ele[0] for ele in value_array]
@@ -81,10 +87,8 @@ if __name__ == '__main__':
                                   user="student",
                                   password="cs336student",
                                   db_name="CryptoNews")
-    print(connector.get_certain_currency(early_date="2018-04-08",
-                                   cur_name="Bitcoin",
-                                   late_date="2018-04-09"))
-
-    print(connector.get_certain_currency(early_date="2018-04-09",
-                                   cur_name="Bitcoin",
-                                   late_date="2018-04-10"))
+    curreny_names = {"Bitcoin", "Ethereum", "Ripple",
+                     "Bitcoincash", "Eos", "Litecoin", "Cardano",
+                      "Iota", "Neo", "Tron"}
+    res = connector.get_top_currency(curreny_names)
+    print((res))
