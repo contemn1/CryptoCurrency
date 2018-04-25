@@ -2,8 +2,10 @@ from flask import Flask
 from update_data import DatabaseConnector
 from datetime import datetime, timedelta
 import json
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 connector = DatabaseConnector(host="cs336.ckksjtjg2jto.us-east-2.rds.amazonaws.com",
                               port=3306,
