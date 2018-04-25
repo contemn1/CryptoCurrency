@@ -34,8 +34,8 @@ def show_user_profile(new_date):
     return json.dumps(res_dict, default=lambda obj: obj.__dict__)
 
 
-@app.route('/<currency_name>/<date>')
-def show_information_of_certain_currency(currency_name, date):
+@app.route('/<date>/<currency_name>')
+def show_information_of_certain_currency(date, currency_name):
     time = datetime.strptime(date, "%Y-%m-%d")
     pre_date = time - timedelta(days=1)
     pre_date = pre_date.strftime("%Y-%m-%d")
@@ -49,9 +49,10 @@ def show_top_currencies():
     result = {"result": connector.get_top_currency(curreny_names)}
     return json.dumps(result)
 
-@app.route('/<currency_name>/<date>/predict')
-def show_information_of_certain_currency(currency_name, date):
-    return json.dumps(connector.predict_currency_price(currency_name, date))
+
+@app.route('/predict/<currency_name>/<time>')
+def predict_price_of_certain_currency(currency_name, time):
+    return json.dumps(connector.predict_currency_price(currency_name, time))
 
 
 
