@@ -77,16 +77,19 @@ class DatabaseConnector(object):
         return new_result
 
     def predict_currency_price(self, currency_name, date):
-        early_date = date - timedelta(days=5)
-        sql_command = """SELECT currency_name, quote FROM Value WHERE currency_name='{0}' time >= '{1}'
-                        and time <= '{2}' ORDER BY time """.format(currency_name, early_date, date)
+        early_date = datetime.strptime(date, "%Y-%m-%d") - timedelta(days=5)
+        early_date = early_date.strftime("%Y-%m-%d")
+        sql_command = """SELECT currency_name, quote FROM Value WHERE currency_name='{0}'  and time >= '{1}'and time <= '{2}' ORDER BY time """.format(currency_name, early_date, date)
         result = self.execute_command(sql_command)
         quotes = np.array([ele[1] for ele in result])
         noise = np.random.uniform(0.9, 1.1, len(quotes))
         predict_quotes = quotes * noise
+        final_result = []
+        for index in range(len(quotes)):
+            final_result.append({"quotes": quotes[index], "predicted_quotes": predict_quotes[index]})
+
         results = {"currency": currency_name,
-                   "quotes": quotes.tolist(),
-                   "predict_quotes": predict_quotes.tolist()}
+                   "result": final_result}
 
         return results
 
