@@ -4,7 +4,8 @@ import sys
 from currency import Currency
 import json
 from contextlib import closing
-from datetime import datetime
+from datetime import datetime, timedelta
+import numpy as np
 
 class DatabaseConnector(object):
     def __init__(self, host, port, user, password, db_name):
@@ -74,6 +75,21 @@ class DatabaseConnector(object):
             item["rate"] = ((latest_prices[index] - item["open"]) / item["open"])*100
 
         return new_result
+
+    def predict_currency_price(self, currency_name, date):
+        early_date = date - timedelta(days=5)
+        sql_command = """SELECT currency_name, quote FROM Value WHERE currency_name='{0}' time >= '{1}'
+                        and time <= '{2}' ORDER BY time """.format(currency_name, early_date, date)
+        result = self.execute_command(sql_command)
+        quotes = np.array([ele[1] for ele in result])
+        noise = np.random.uniform(0.9, 1.1, len(quotes))
+        predict_quotes = quotes * noise
+        results = {"currency": currency_name,
+                   "quotes": quotes.tolist(),
+                   "predict_quotes": predict_quotes.tolist()}
+
+        return results
+
 
 def calculate_diff_percentage(value_array):
     price = [ele[0] for ele in value_array]

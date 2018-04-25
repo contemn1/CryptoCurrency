@@ -48,3 +48,10 @@ def show_information_of_certain_currency(currency_name, date):
 def show_top_currencies():
     result = {"result": connector.get_top_currency(curreny_names)}
     return json.dumps(result)
+
+@app.route('/<currency_name>/<date>/predict')
+def show_information_of_certain_currency(currency_name, date):
+    return json.dumps(connector.predict_currency_price(currency_name, date))
+
+
+
