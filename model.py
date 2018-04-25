@@ -6,6 +6,7 @@ import torch.optim as optim
 import numpy as np
 import copy
 
+
 class Predictor(object):
     def __init__(self, model, train_data, test_data, batch_size=64, use_cuda=False, l2_reg=0.001):
         self.use_cuda = use_cuda
@@ -111,14 +112,14 @@ class Predictor(object):
         self.model = best_model
 
 
-
 class LSTMRegressor(nn.Module):
-    def __init__(self, input_size, hidden_size, dropout_rate=0.5):
+    def __init__(self, input_size, hidden_size, dropout_rate=0.5, layer=1):
         super(LSTMRegressor, self).__init__()
-        self.rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size)
+        self.rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
+                           num_layers=layer, dropout=dropout_rate)
         self.init_rnn()
         self.dropout_layer = nn.Dropout(dropout_rate)
-        self.linear = nn.Linear(hidden_size, 1)
+        self.linear = nn.Linear(layer * hidden_size, 1)
 
     def forward(self, data):
         _, (last_hidden, _) = self.rnn(data)
