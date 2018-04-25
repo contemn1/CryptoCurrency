@@ -73,6 +73,7 @@ class DatabaseConnector(object):
         for index, item in enumerate(new_result):
             item["latest"] = latest_prices[index]
             item["rate"] = ((latest_prices[index] - item["open"]) / item["open"])*100
+            item["url"] = "predict/{0}/2018-04-16".format(item["currency"])
 
         return new_result
 
