@@ -1,9 +1,10 @@
 from flask import Flask
-from update_data import DatabaseConnector
+from mysql_connector import DatabaseConnector
 from datetime import datetime, timedelta
 import json
 from flask_cors import CORS
 import os
+from postgres_connector import PostGresConnector
 
 app = Flask(__name__)
 CORS(app)
@@ -13,6 +14,13 @@ connector = DatabaseConnector(host="cs336.ckksjtjg2jto.us-east-2.rds.amazonaws.c
                               user="student",
                               password="cs336student",
                               db_name="CryptoNews")
+
+
+postgres_connector = PostGresConnector(db_name="miandb",
+                                       user="postgres",
+                                       password="3968997",
+                                       host="ec2-35-173-229-80.compute-1.amazonaws.com")
+
 
 curreny_names = {"Bitcoin", "Ethereum", "Ripple",
                  "Bitcoincash", "Eos", "Litecoin", "Cardano",
@@ -64,4 +72,20 @@ def predict_price_of_certain_currency(currency_name, time):
         return json.dumps(res)
 
 
+@app.route('/articles/<currency_name>/recent')
+def get_related_articles_first_page(currency_name):
+    today = datetime.today()
+    before = datetime.today() - timedelta(days=3)
+    num_dict = postgres_connector.query_number_of_news(currency_name,
+                                                       before_time=before,
+                                                       after_time=today)
+    if num_dict["num_news"] == 0:
+        return json.dumps({"number": 0, "result": []})
+
+    res_dict = postgres_connector.query_currency_news(currency_name=currency_name,
+                                  before_time=before,
+                                  after_time=today,
+                                  limit=10,
+                                  offset=0)
+    return json.dumps({"number": num_dict["num_news"], "result": res_dict["result"]})
 

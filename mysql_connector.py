@@ -6,6 +6,8 @@ import json
 from contextlib import closing
 from datetime import datetime, timedelta
 import numpy as np
+import psycopg2
+
 
 class DatabaseConnector(object):
     def __init__(self, host, port, user, password, db_name):
@@ -99,16 +101,3 @@ def calculate_diff_percentage(value_array):
     price = [ele[0] for ele in value_array]
     price_diff = (price[-1] - price[0]) / price[0] if price[0] != 0 else -1.0
     return price[-1], price_diff
-
-
-if __name__ == '__main__':
-    connector = DatabaseConnector(host="cs336.ckksjtjg2jto.us-east-2.rds.amazonaws.com",
-                                  port=3306,
-                                  user="student",
-                                  password="cs336student",
-                                  db_name="CryptoNews")
-    curreny_names = {"Bitcoin", "Ethereum", "Ripple",
-                     "Bitcoincash", "Eos", "Litecoin", "Cardano",
-                      "Iota", "Neo", "Tron"}
-    res = connector.get_top_currency(curreny_names)
-    print((res))

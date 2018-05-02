@@ -34,8 +34,13 @@ def parse(html_page):
     res = res[::-1]
     return res
 
+
 if __name__ == '__main__':
-    url = "https://coinmarketcap.com/currencies/bitcoin-cash/historical-data/?start=20170425&end=20180425"
+    curreny_names = {"Bitcoin", "Ethereum", "Ripple",
+                     "Bitcoincash", "Eos", "Litecoin", "Cardano",
+                      "Iota", "Neo", "Tron"}
+
+    url = "https://coinmarketcap.com/currencies/tron/historical-data/?start=20170425&end=20180425"
     page = fetch_url(url)
     result = parse(page)
     print("\t".join(["Date", "Open", "High", "Low", "Close", "Volume", "Market Cap"]))
