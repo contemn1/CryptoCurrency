@@ -5,6 +5,7 @@ import json
 from flask_cors import CORS
 import os
 from postgres_connector import PostGresConnector
+from flask import request
 
 app = Flask(__name__)
 CORS(app)
@@ -88,4 +89,20 @@ def get_related_articles_first_page(currency_name):
                                   limit=10,
                                   offset=0)
     return json.dumps({"number": num_dict["num_news"], "result": res_dict["result"]})
+
+
+@app.route('/articles/<currency_name>/following')
+def get_related_articles_following(currency_name):
+    today = datetime.today()
+    before = datetime.today() - timedelta(days=3)
+    page_size = int(request.args.get('pagesize'))
+    page = int(request.args.get('page'))
+    offset = (page - 1) * page_size
+    res_dict = postgres_connector.query_currency_news(currency_name=currency_name,
+                                  before_time=before,
+                                  after_time=today,
+                                  limit=page_size,
+                                  offset=offset)
+    return json.dumps({"result": res_dict["result"]})
+
 
